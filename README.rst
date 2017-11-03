@@ -1,10 +1,10 @@
-.. image:: https://travis-ci.org/rgalanakis/goless.svg?branch=master
-    :target: https://travis-ci.org/rgalanakis/goless
+.. image:: https://travis-ci.org/Contextualist/goless.svg?branch=master
+    :target: https://travis-ci.org/Contextualist/goless
     :alt: build status
     :align: right
 
-.. image:: https://img.shields.io/coveralls/rgalanakis/goless.svg
-    :target: https://coveralls.io/r/rgalanakis/goless
+.. image:: https://img.shields.io/coveralls/Contextualist/goless.svg
+    :target: https://coveralls.io/r/Contextualist/goless
     :alt: coverage status
     :align: right
 
@@ -26,6 +26,6 @@ and Python 2.6 to 3.4.
 See https://goless.readthedocs.org/ for more information.
 
 .. _Go: http://www.golang.org
-.. _testing: https://travis-ci.org/rgalanakis/goless
-.. _examples: https://github.com/rgalanakis/goless/tree/master/examples
+.. _testing: https://travis-ci.org/Contextualist/goless
+.. _examples: https://github.com/Contextualist/goless/tree/master/examples
 .. _documentation: https://goless.readthedocs.org/

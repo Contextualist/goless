@@ -62,6 +62,6 @@ Please follow `PEP8`_ for all contributed code.  Specifically, please keep
 the window width to 80 chars and follow the PEP8 formatting style.
 
 .. _`tox`: http://codespeak.net/tox/
-.. _`Travis CI project`: https://travis-ci.org/rgalanakis/goless
+.. _`Travis CI project`: https://travis-ci.org/Contextualist/goless
 .. _Stackless Python: http://www.stackless.com/
 .. _`PEP8`: http://www.python.org/dev/peps/pep-0008/
