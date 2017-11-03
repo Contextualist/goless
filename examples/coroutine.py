@@ -19,7 +19,7 @@ def main():
         def counter():
             count = 0
             while True:
-                yielder.send(count)
+                yielder < count
                 count += 1
 
         goless.go(counter)
@@ -28,7 +28,7 @@ def main():
     resume = integers()
 
     def generate_integer():
-        return resume.recv()
+        return -resume
 
     print(generate_integer())
     print(generate_integer())

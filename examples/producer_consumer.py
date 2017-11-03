@@ -21,25 +21,25 @@ def main():
 
     def produce():
         for i in range(10):
-            msgs.send(i)
+            msgs < i
         msgs.close()
 
     def consume(name):
         for msg in msgs:
-            out.send('%s:%s ' % (name, msg))
+            out < '%s:%s '%(name, msg)
         out.close()
 
     def logger():
         for msg in out:
             sys.stdout.write(msg)
         sys.stdout.write('\n')
-        done.send()
+        done < None
 
     goless.go(produce)
     goless.go(consume, "one")
     goless.go(consume, "two")
     goless.go(logger)
-    done.recv()
+    -done
 
 
 if __name__ == '__main__':

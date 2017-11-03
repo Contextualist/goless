@@ -13,18 +13,18 @@ class RecvCaseTests(BaseTests):
 
     def test_ready(self):
         self.assertFalse(self.ca.ready())
-        be.run(self.ch.send, 1)
+        be.run(lambda: self.ch < 1)
         self.assertTrue(self.ca.ready())
-        be.run(self.ch.recv)
+        be.run(lambda: -self.ch)
         self.assertFalse(self.ca.ready())
 
     def test_executes(self):
-        be.run(self.ch.send, 'a')
+        be.run(lambda: self.ch < 'a')
         x = self.ca.exec_()
         self.assertEqual(x, 'a')
 
     def test_exec_with_no_body(self):
-        be.run(self.ch.send, 'a')
+        be.run(lambda: self.ch < 'a')
         ca = goless.rcase(self.ch)
         self.assertEqual(ca.exec_(), 'a')
 
@@ -47,25 +47,25 @@ class SendCaseTests(BaseTests):
             self.assertEquals(self.ca.ready(), self.chansize > 0)
 
         assert_default_readiness()
-        be.run(self.ch.send)
+        be.run(lambda: self.ch < None)
         self.assertFalse(self.ca.ready())
-        be.run(self.ch.recv)
+        be.run(lambda: -self.ch)
         assert_default_readiness()
-        be.run(self.ch.send)
+        be.run(lambda: self.ch < None)
         self.assertFalse(self.ca.ready())
-        be.run(self.ch.recv)
+        be.run(lambda: -self.ch)
         assert_default_readiness()
 
     def test_executes(self):
         def recv():
-            a.append(self.ch.recv())
+            a.append(-self.ch)
         a = []
         be.run(recv)
         self.ca.exec_()
         self.assertEqual(a, [self.sendval])
 
     def test_exec_no_onselected(self):
-        be.run(self.ch.recv)
+        be.run(lambda: -self.ch)
         self.ca.exec_()
 
 
@@ -87,7 +87,7 @@ class SelectTests(BaseTests):
     def test_select_chooses_ready_selection(self):
         readychan = goless.chan(1)
         notreadychan = goless.chan(1)
-        readychan.send(3)
+        readychan < 3
         cases = [goless.rcase(notreadychan), goless.rcase(readychan), goless.dcase()]
         result, val = goless.select(cases)
         self.assertIs(result, cases[1])
@@ -103,7 +103,7 @@ class SelectTests(BaseTests):
             a.append(goless.select(cases))
         be.run(sel)
         self.assertEqual(a, [])
-        chan1.send(5)
+        chan1 < 5
         be.yield_()
         self.assertEqual(len(a), 1)
         chosen, val = a[0]

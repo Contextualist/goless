@@ -27,19 +27,19 @@ def pipeline():
     def scanner():
         for d, dn, f in os.walk('.'):
             for fn in f:
-                files.send(os.path.join(d, fn))
+                files < os.path.join(d, fn)
         files.close()
 
     def hasher():
         for f in files:
             with open(f, 'rb') as fd:
                 md5 = hashlib.md5(fd.read()).hexdigest()
-                hashes.send((f, md5))
+                hashes < (f, md5)
         hashes.close()
 
     def collector():
         for f, md5 in hashes:
-            results.send((f, md5))
+            results < (f, md5)
         results.close()
 
     goless.go(scanner)

@@ -21,14 +21,14 @@ def bench_channel(chan_size):
 
     def func():
         for _ in range(QUEUE_LEN):
-            c.send(0)
+            c < 0
         c.close()
     count = 0
 
     go(func)
     start = time.clock()
     for _ in range(QUEUE_LEN):
-        c.recv()
+        -c
         count += 1
     end = time.clock()
     return end - start
@@ -53,8 +53,8 @@ def bench_select(use_default):
 
     def sender():
         while True:
-            c.send(0)
-            c.recv()
+            c < 0
+            -c
     go(sender)
 
     start = time.clock()

@@ -32,12 +32,12 @@ def pfor():
 
     def mapper(index, value):
         results[index] = dosomething(value)
-        semaphore.send()
+        semaphore < None
 
     for i, item in enumerate(items):
         goless.go(mapper, i, item)
     for _ in range(n):
-        semaphore.recv()
+        -semaphore
     print('Finished: %s' % results)
 
 

@@ -21,22 +21,22 @@ class ChanTestMixin(object):
     def test_send_on_closed_chan_will_raise(self):
         chan = self.makechan()
         chan.close()
-        self.assertRaises(gochans.ChannelClosed, chan.send)
+        self.assertRaises(gochans.ChannelClosed, lambda: chan < None)
 
     def test_recv_on_closed_chan_raises_after_chan_empties(self):
         chan = self.makechan()
 
-        be.run(chan.send, 'hi')
-        self.assertEqual(chan.recv(), 'hi')
+        be.run(lambda: chan < 'hi')
+        self.assertEqual(-chan, 'hi')
         chan.close()
-        self.assertRaises(gochans.ChannelClosed, chan.recv)
+        self.assertRaises(gochans.ChannelClosed, lambda: -chan)
 
     def test_range_with_closed_channel(self):
         chan = self.makechan()
         sendCount = min(chan.maxsize, 5)
         data2send = list(range(sendCount))
         for data in data2send:
-            be.run(chan.send, data)
+            be.run(lambda: chan < data)
         chan.close()
         items = [o for o in chan]
         self.assertEqual(items, data2send)
@@ -74,14 +74,14 @@ class SyncChannelTests(BaseTests, ChanTestMixin):
         chan = gochans.SyncChannel()
         results = []
 
-        goless.go(lambda: chan.send(1))
+        goless.go(lambda: chan < 1)
 
         def check_results_empty():
             self.assertFalse(results)
-            chan.send(2)
+            chan < 2
         goless.go(check_results_empty)
 
-        results = [chan.recv(), chan.recv()]
+        results = [-chan, -chan]
         self.assertEqual(results, [1, 2])
 
     def test_channel_send_raises_when_closed(self):
@@ -120,7 +120,7 @@ class AsyncChannelTests(BaseTests, ChanTestMixin):
         # but we can just test a huge one's behavior.
         chan = gochans.AsyncChannel()
         for _ in range(10000):
-            chan.send()
+            chan < None
         chan.close()
         for _ in chan:
             pass
@@ -143,14 +143,14 @@ class BufferedChannelTests(BaseTests, ChanTestMixin):
 
         def func():
             for num in range(5):
-                resultschan.send(square(num))
-            endchan.send()
+                resultschan < square(num)
+            endchan < None
 
         goless.go(func)
         # Waiting on the endchan tells us our results are
         # queued up in resultschan
-        endchan.recv()
-        got = [resultschan.recv() for _ in range(5)]
+        -endchan
+        got = [-resultschan for _ in range(5)]
         ideal = [square(i) for i in range(5)]
         self.assertEqual(got, ideal)
 
@@ -159,17 +159,17 @@ class BufferedChannelTests(BaseTests, ChanTestMixin):
         markers = []
 
         def sendall():
-            markers.append(chan.send(4))
-            markers.append(chan.send(3))
-            markers.append(chan.send(2))
-            markers.append(chan.send(1))
+            markers.append(chan < 4)
+            markers.append(chan < 3)
+            markers.append(chan < 2)
+            markers.append(chan < 1)
         sender = be.run(sendall)
         self.assertEqual(len(markers), 2)
-        got = [chan.recv(), chan.recv()]
+        got = [-chan, -chan]
         be.resume(sender)
         self.assertEqual(len(markers), 4)
         self.assertEqual(got, [4, 3])
-        got.extend([chan.recv(), chan.recv()])
+        got.extend([-chan, -chan])
         self.assertEqual(got, [4, 3, 2, 1])
 
     def test_recv_with_no_items_blocks(self):
@@ -177,13 +177,13 @@ class BufferedChannelTests(BaseTests, ChanTestMixin):
         markers = []
 
         def recvall():
-            markers.append(chan.recv())
-            markers.append(chan.recv())
+            markers.append(-chan)
+            markers.append(-chan)
         be.run(recvall)
         self.assertEqual(markers, [])
-        chan.send(1)
+        chan < 1
         self.assertEqual(markers, [1])
-        chan.send(2)
+        chan < 2
         self.assertEqual(markers, [1, 2])
 
 
@@ -222,12 +222,12 @@ class BackendChannelSenderReceiverPriorityTest(BaseTests):
 
         def other():
             actions.append('recv pending')
-            chan.recv()
+            -chan
             actions.append('recv acted')
 
         goless.go(other)
         actions.append('send pending')
-        chan.send()
+        chan < None
         actions.append('send acted')
 
         self.assertEqual(actions, [
@@ -245,12 +245,12 @@ class BackendChannelSenderReceiverPriorityTest(BaseTests):
 
         def other():
             actions.append('send pending')
-            chan.send()
+            chan < None
             actions.append('send acted')
 
         goless.go(other)
         actions.append('recv pending')
-        chan.recv()
+        -chan
         actions.append('recv acted')
 
         self.assertEqual(actions, [

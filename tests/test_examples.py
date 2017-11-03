@@ -18,12 +18,12 @@ class Examples(BaseTests):
 
         def func1():
             time.sleep(.1)
-            c1.send('one')
+            c1 < 'one'
         goless.go(func1)
 
         def func2():
             time.sleep(.2)
-            c2.send('two')
+            c2 < 'two'
         goless.go(func2)
 
         # We don't print since we run this as a test.
@@ -38,8 +38,8 @@ class Examples(BaseTests):
     def test_range_over_channels(self):
         # https://gobyexample.com/range-over-channels
         queue = goless.chan(2)
-        queue.send('one')
-        queue.send('two')
+        queue < 'one'
+        queue < 'two'
         queue.close()
         elements = [elem for elem in queue]
         self.assertEqual(elements, ['one', 'two'])
@@ -53,7 +53,7 @@ class Examples(BaseTests):
             for j in jobs:
                 jobs_done.append('w %s j %s' % (id, j))
                 time.sleep(.01)
-                results.send(j * 2)
+                results < j * 2
 
         jobs = goless.chan(100)
         results = goless.chan(100)
@@ -62,11 +62,11 @@ class Examples(BaseTests):
             goless.go(lambda: worker(w, jobs, results))
 
         for j in range(1, 10):
-            jobs.send(j)
+            jobs < j
         jobs.close()
 
         for a in range(1, 10):
-            results.recv()
+            -results
         self.assertEqual(len(jobs_done), 9)
 
     def test_case_switch(self):

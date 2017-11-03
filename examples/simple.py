@@ -11,13 +11,13 @@ def simple():
 
     def goroutine():
         while True:
-            value = channel.recv()
-            channel.send(value ** 2)
+            value = -channel
+            channel < value**2
     goless.go(goroutine)
 
     for i in range(2, 5):
-        channel.send(i)
-        squared = channel.recv()
+        channel < i
+        squared = -channel
         print('%s squared is %s' % (i, squared))
 
     # Output:

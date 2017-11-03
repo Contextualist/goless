@@ -36,6 +36,8 @@ class GoChannel(object):
             raise ChannelClosed()
         self._send(value)
 
+    __lt__ = send
+
     def _send(self, value):
         raise NotImplementedError()
 
@@ -52,6 +54,8 @@ class GoChannel(object):
             raise ChannelClosed()
         got = self._recv()
         return got
+
+    __neg__ = recv
 
     def _recv(self):
         raise NotImplementedError()

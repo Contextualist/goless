@@ -29,29 +29,29 @@ import goless
 # First create the async versions built on promises
 def inverse_async(future):
     c = goless.chan()
-    goless.go(lambda: c.send(future.recv() * -1))
+    goless.go(lambda: c < -future*-1)
     return c
 
 
 def product_async(future_a, future_b):
     c = goless.chan()
-    goless.go(lambda: c.send(future_a.recv() * future_b.recv()))
+    goless.go(lambda: c < -future_a * -future_b))
     return c
 
 
 # And implement synchronous versions in terms of the async versions.
 # Use the promise helper to create a future.
 def inverse(a):
-    return inverse_async(promise(a)).recv()
+    return -inverse_async(promise(a))
 
 
 def product(a, b):
-    return product_async(promise(a), promise(b)).recv()
+    return -product_async(promise(a), promise(b))
 
 
 def promise(value):
     future = goless.chan(1)
-    future.send(value)
+    future < value
     return future
 
 
@@ -69,7 +69,7 @@ def main():
         return product_async(ai_future, bi_future)
 
     print('Sync: %s' % inverse_product_sync())
-    print('Async: %s' % inverse_product_async().recv())
+    print('Async: %s' % -inverse_product_async())
 
 
 if __name__ == '__main__':

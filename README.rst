@@ -1,4 +1,4 @@
-.. image:: https://travis-ci.org/Contextualist/goless.svg?branch=master
+.. image:: https://travis-ci.org/Contextualist/goless.svg?branch=syntax
     :target: https://travis-ci.org/Contextualist/goless
     :alt: build status
     :align: right
