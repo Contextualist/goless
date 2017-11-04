@@ -23,13 +23,14 @@ class ChanTestMixin(object):
         chan.close()
         self.assertRaises(gochans.ChannelClosed, lambda: chan < None)
 
-    def test_recv_on_closed_chan_raises_after_chan_empties(self):
+    def test_recv_on_closed_chan_after_chan_empties(self):
         chan = self.makechan()
 
         be.run(lambda: chan < 'hi')
         self.assertEqual(-chan, 'hi')
         chan.close()
         self.assertRaises(gochans.ChannelClosed, lambda: -chan)
+        self.assertIsNone(chan.recv_q())
 
     def test_range_with_closed_channel(self):
         chan = self.makechan()
@@ -64,6 +65,16 @@ class ChanTestMixin(object):
 
     def test_channel_recv_raises_when_closed(self):
         self._test_channel_raises_when_closed('recv')
+
+    def test_channel_recvq_returns_none_when_closed(self):
+        chan = self.makechan()
+
+        def receive():
+            self.assertIsNone(chan.recv_q())
+
+        be.run(receive)
+        chan.close()
+        be.yield_()
 
 
 class SyncChannelTests(BaseTests, ChanTestMixin):

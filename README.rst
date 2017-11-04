@@ -1,10 +1,10 @@
 .. image:: https://travis-ci.org/Contextualist/goless.svg?branch=syntax
-    :target: https://travis-ci.org/Contextualist/goless
+    :target: https://travis-ci.org/Contextualist/goless?branch=syntax
     :alt: build status
     :align: right
 
-.. image:: https://img.shields.io/coveralls/Contextualist/goless.svg
-    :target: https://coveralls.io/r/Contextualist/goless
+.. image:: https://coveralls.io/repos/github/Contextualist/goless/badge.svg?branch=syntax
+    :target: https://coveralls.io/r/Contextualist/goless?branch=syntax
     :alt: coverage status
     :align: right
 

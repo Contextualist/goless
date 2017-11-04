@@ -32,8 +32,6 @@ class GoChannel(object):
         If the channel closes during a blocking ``send``,
         :class:`goless.ChannelClosed` will be raised. (#TODO)
         """
-        if self._closed:
-            raise ChannelClosed()
         self._send(value)
 
     __lt__ = send
@@ -50,9 +48,19 @@ class GoChannel(object):
         If the channel closes during a blocking ``recv``,
         :class:`goless.ChannelClosed` will be raised. (#TODO)
         """
-        if self._closed and not self.recv_ready():
-            raise ChannelClosed()
-        got = self._recv()
+        got, ok = self._recv()
+        if not ok:
+            raise ChannelClosed("receive on closed channel")
+        return got
+
+    def recv_q(self):
+        """
+        Similar to :func:`goless.GoChannel.recv`,
+        but with a behavior closer to Go's receive operator:
+        when the channel is closed and empty,
+        return `None` immediately.
+        """
+        got, _ = self._recv()
         return got
 
     __neg__ = recv
@@ -76,11 +84,9 @@ class GoChannel(object):
 
     def close(self):
         """
-        Closes the channel, not allowing further communication.
-        Any blocking senders or receivers will be woken up and
-        raise :class:`goless.ChannelClosed`.
-        Receiving or sending to a closed channel
-        will raise :class:`goless.ChannelClosed`.
+        Closes the channel, not allowing further sending.
+        Any blocking senders or receivers will be woken up to
+        raise :class:`goless.ChannelClosed` or return.
         """
         self._closed = True
 
@@ -88,10 +94,10 @@ class GoChannel(object):
         return self
 
     def _next(self):
-        try:
-            return self.recv()
-        except ChannelClosed:
+        v, ok = self._recv()
+        if not ok:
             raise StopIteration
+        return v
 
     if _PY3:
         def __next__(self):
@@ -134,6 +140,8 @@ class BufferedChannel(GoChannel):
         self.waiting_chan = _be.channel()
 
     def _send(self, value):
+        if self._closed:
+            raise ChannelClosed("send on closed channel")
         buffer_size = len(self.values_deque)
         chan_balance = self.waiting_chan.balance
         assert buffer_size <= self.maxsize
@@ -143,12 +151,15 @@ class BufferedChannel(GoChannel):
         if chan_balance < 0 or buffer_size == self.maxsize:
             self.waiting_chan.send(value)
             if self._closed:
-                raise ChannelClosed("Channel closed while sending")
+                raise ChannelClosed("channel closed while sending")
         else:
             assert buffer_size < self.maxsize
             self.values_deque.append(value)
 
     def _recv(self):
+        if self._closed and not self.recv_ready():
+            return None, False
+        ok = True
         if self.values_deque:
             value = self.values_deque.popleft()
             if self.waiting_chan.balance > 0:
@@ -156,8 +167,8 @@ class BufferedChannel(GoChannel):
         else:
             value = self.waiting_chan.receive()
             if self._closed:
-                raise ChannelClosed("Channel closed while receiving")
-        return value
+                value, ok = None, False
+        return value, ok
 
     def recv_ready(self):
         return self.values_deque or self.waiting_chan.balance > 0
@@ -182,7 +193,7 @@ class BufferedChannel(GoChannel):
         # we mark the channel closed and then spam out sends or
         # receives if needed.
         # The tasklets will wake up, see the channel is closed,
-        # and raise a ChannelClosed error.
+        # and raise a ChannelClosed error or return.
         GoChannel.close(self)
         balance = self.waiting_chan.balance
         for _ in _range(balance, 0):
