@@ -1,10 +1,10 @@
-.. image:: https://travis-ci.org/Contextualist/goless.svg?branch=master
-    :target: https://travis-ci.org/Contextualist/goless
+.. image:: https://travis-ci.org/Contextualist/goless.svg?branch=go-spec
+    :target: https://travis-ci.org/Contextualist/goless?branch=go-spec
     :alt: build status
     :align: right
 
-.. image:: https://img.shields.io/coveralls/Contextualist/goless.svg
-    :target: https://coveralls.io/r/Contextualist/goless
+.. image:: https://coveralls.io/repos/github/Contextualist/goless/badge.svg?branch=go-spec
+    :target: https://coveralls.io/r/Contextualist/goless?branch=go-spec
     :alt: coverage status
     :align: right
 
