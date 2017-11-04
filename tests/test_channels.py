@@ -29,8 +29,8 @@ class ChanTestMixin(object):
         be.run(lambda: chan < 'hi')
         self.assertEqual(-chan, 'hi')
         chan.close()
-        self.assertRaises(gochans.ChannelClosed, lambda: -chan)
-        self.assertIsNone(chan.recv_q())
+        self.assertRaises(gochans.ChannelClosed, lambda: ~chan)
+        self.assertIsNone(-chan)
 
     def test_range_with_closed_channel(self):
         chan = self.makechan()
@@ -70,7 +70,7 @@ class ChanTestMixin(object):
         chan = self.makechan()
 
         def receive():
-            self.assertIsNone(chan.recv_q())
+            self.assertIsNone(-chan)
 
         be.run(receive)
         chan.close()

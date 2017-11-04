@@ -53,6 +53,8 @@ class GoChannel(object):
             raise ChannelClosed("receive on closed channel")
         return got
 
+    __invert__ = recv
+
     def recv_q(self):
         """
         Similar to :func:`goless.GoChannel.recv`,
@@ -63,7 +65,7 @@ class GoChannel(object):
         got, _ = self._recv()
         return got
 
-    __neg__ = recv
+    __neg__ = recv_q
 
     def _recv(self):
         raise NotImplementedError()
